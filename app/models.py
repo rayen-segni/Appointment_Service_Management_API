@@ -12,18 +12,19 @@ class AppointStatus(enum.Enum):
   CANCELED = "canceled"
 
 
-
+#User Model
 class User(Base):
-  __tablename__ = "clients"
+  __tablename__ = "users"
   
   id = Column(Integer, primary_key=True, nullable=False)
   full_name = Column(String, nullable=False)
   email = Column(String, unique=True, nullable=False)
   phone_num = Column(String, nullable=False)
+  password = Column(String, nullable=False)
   created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
 
-
+#Role Model
 class Role(Base):
   __tablename__ = "roles"
   
@@ -31,7 +32,7 @@ class Role(Base):
   name = Column(String, unique=True, nullable=False)
 
 
-
+#Role of each user
 class UserRole(Base):
   __tablename__ = "user_roles"
   
@@ -42,7 +43,7 @@ class UserRole(Base):
   role = relationship("Role")
 
 
-
+#Permession Model
 class Permession(Base):
   __tablename__ = "permessions"
   
@@ -50,7 +51,7 @@ class Permession(Base):
   name = Column(String, unique=True, nullable=False)
 
 
-
+#Permession of each role
 class RolePermession(Base):
   __tablename__ = "role_permessions"
   
@@ -58,7 +59,7 @@ class RolePermession(Base):
   role_id = Column(Integer, ForeignKey(Role.id, ondelete="CASCADE", onupdate="CASCADE"), primary_key=True, nullable=False)
 
 
-
+#Service Model
 class Service(Base):
   __tablename__ = "services"
   
@@ -69,7 +70,7 @@ class Service(Base):
   description = Column(String)
 
 
-
+#Appointment Model
 class Appointment (Base):
   __tablename__ = "appointments"
   

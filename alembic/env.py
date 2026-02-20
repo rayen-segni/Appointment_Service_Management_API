@@ -7,11 +7,12 @@ from alembic import context
 
 from app.models import Base  # Make sure this import path is correct
 # from app.config import settings  # If you want to use settings
+from app.config import settings
 
 # this is the Alembic Config object
 config = context.config
 config.set_main_option(
-    "sqlalchemy.url", "postgresql://postgres:postgres@localhost:5432/appointment_service"
+    'sqlalchemy.url', f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}"
 )
 
 # Interpret the config file for Python logging.
