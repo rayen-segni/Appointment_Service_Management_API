@@ -4,12 +4,15 @@ from jose import jwt, JWTError
 from . import schemas, database
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from .config import settings
+from typing import Optional
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="login", auto_error=False)
 
-SECRET_KEY = "h56et1h1j7814ze9198zsr51z91615zr"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_TIME = 120
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_TIME = settings.access_token_expire_minutes
 
 def create_access_token(data: dict):
   
@@ -45,7 +48,12 @@ def get_current_user(token: str = Depends(oauth2_scheme),
   credentials_exeption = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                       detail="Could Not Validate Crendetials",
                                       headers={"WWW-Authenticate": "Bearer"})
-  
+
   user_info = verify_access_token(token, credentials_exeption)
   
   return user_info
+
+def get_optional_current_user(token: Optional[str] = Depends(oauth2_scheme_optional)):
+    if not token:
+        return None  # anonymous user, no token provided
+    return get_current_user(token)
