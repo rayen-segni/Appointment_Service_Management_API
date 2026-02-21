@@ -13,6 +13,9 @@ class UserCreate(BaseModel):
   phone_num: str
   password: str
   role: Optional[str] = "user"
+  
+class UserUpdate(UserCreate):
+  pass
 
 class UserResponse(BaseModel):
   id: int

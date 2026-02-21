@@ -3,7 +3,7 @@ from ..database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .. import schemas, models, oauth2, utils
-from sqlalchemy import or_,func
+from sqlalchemy import or_, and_, func
 
 router = APIRouter(
   prefix="/users",
@@ -72,3 +72,45 @@ def show_users(db: Session = Depends(get_db),
   
   return users
 
+@router.put("/{id}",
+            response_model=schemas.UserResponse)
+def update_user(
+  updated_user: schemas.UserUpdate,
+  id: int,
+  db: Session = Depends(get_db),
+  current_user: schemas.TokenData = Depends(oauth2.get_current_user)
+  ):
+  
+  user_query =(db.query(models.User)
+              .filter(models.User.id == id))
+  user = user_query.first()
+  
+  #verify on user existance
+  if user is None:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                        detail="User Not Found")
+  
+  
+  # resolve role name → role_id
+  role = db.query(models.Role).filter(models.Role.name == updated_user.role).first()
+  if role is None:
+      raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                          detail="Role Not Found")
+
+  #Verify that the update role is normal user
+  if updated_user.role != "user":
+    if current_user.role != "admin":
+      raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                          detail="Admin Privileges Required")
+
+  
+  # build update dict, replace role with role_id
+  update_dict = {k: v for k, v in updated_user.dict().items() if k != "role"}
+  update_dict["role_id"] = role.id
+  update_dict["password"] = utils.hash(update_dict["password"])
+  
+
+  user_query.update(update_dict, synchronize_session=False)
+  db.commit()
+
+  return user
