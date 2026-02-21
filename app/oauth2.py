@@ -54,6 +54,6 @@ def get_current_user(token: str = Depends(oauth2_scheme),
   return user_info
 
 def get_optional_current_user(token: Optional[str] = Depends(oauth2_scheme_optional)):
-    if not token:
-        return None  # anonymous user, no token provided
-    return get_current_user(token)
+  if not token:
+      return None  # anonymous user, no token provided
+  return get_current_user(token)
