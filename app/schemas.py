@@ -1,6 +1,10 @@
 from pydantic import BaseModel, EmailStr
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 from datetime import datetime
+
+
+class RoleOut(BaseModel):
+  name: str
 
 #Users
 class UserCreate(BaseModel):
@@ -16,8 +20,7 @@ class UserResponse(BaseModel):
   email: EmailStr
   phone_num: str
   created_at: datetime
-  role_id: int
-
+  role: RoleOut
 
 
 #Authetication

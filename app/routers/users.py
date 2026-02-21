@@ -3,6 +3,7 @@ from ..database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .. import schemas, models, oauth2, utils
+from sqlalchemy import or_,func
 
 router = APIRouter(
   prefix="/users",
@@ -49,4 +50,25 @@ def add_user(user: schemas.UserCreate,
     raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                         detail="Email Already exist")
   return new_user
+
+@router.get("/",
+            response_model=schemas.List[schemas.UserResponse])
+def show_users(db: Session = Depends(get_db),
+              current_user: dict = Depends(oauth2.get_current_user),
+              search: str = "", limit: int = 5):
+  
+  if (current_user.role not in ("admin", "staff")):
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Some Privileges Required")
+  
+  users = (db.query(models.User)
+        .filter(func.upper(models.User.full_name).contains(search.upper()))
+        .limit(limit)
+        .all())
+  
+  if users is None:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                        detail="No Users Found")
+  
+  return users
 
