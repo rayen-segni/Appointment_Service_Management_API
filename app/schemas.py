@@ -26,6 +26,30 @@ class UserResponse(BaseModel):
   role: RoleOut
 
 
+#Appointments
+
+class AppointmentCreate(BaseModel):
+  service: str
+  status: Literal["pending", "paid"]
+  start_date_time: datetime
+  staff_notes: Optional[str] = None
+  cancelation_reason: Optional[str] = None
+
+
+class AppointmentResponse(BaseModel):
+  id: int
+  service_id: int
+  status: Literal["pending", "paid"]
+  start_date_time: datetime
+  end_date_time: datetime
+  staff_notes: Optional[str] = None
+  cancelation_reason: Optional[str] = None
+  created_at: datetime
+  updated_at: datetime
+  
+  user: UserResponse
+
+
 #Authetication
 class UserLogin(BaseModel):
   email: EmailStr

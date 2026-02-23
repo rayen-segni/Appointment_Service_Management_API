@@ -86,10 +86,10 @@ class Appointment (Base):
   id = Column(Integer, primary_key=True, nullable=False)
   user_id = Column(Integer, ForeignKey(User.id, ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
   service_id = Column(Integer, ForeignKey(Service.id, ondelete="RESTRICT", onupdate="CASCADE"), nullable=False)
-  status = Column(Enum(AppointStatus), nullable=False, default=AppointStatus.PENDING)
+  status = Column(Enum(AppointStatus), nullable=False, server_default="pending")
   
-  start_time = Column(DateTime, nullable=False)
-  end_time = Column(DateTime, nullable=False)
+  start_date_time = Column(DateTime, nullable=False)
+  end_date_time = Column(DateTime, nullable=False)
   
   created_at = Column(DateTime, nullable=False, server_default=func.now())
   updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())

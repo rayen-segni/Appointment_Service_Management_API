@@ -108,9 +108,9 @@ def update_user(
   update_dict = {k: v for k, v in updated_user.dict().items() if k != "role"}
   update_dict["role_id"] = role.id
   update_dict["password"] = utils.hash(update_dict["password"])
-  
 
   user_query.update(update_dict, synchronize_session=False)
   db.commit()
 
   return user
+
